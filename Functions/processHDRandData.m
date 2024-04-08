@@ -1,6 +1,6 @@
 function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFolderPath)
     % Check if the output folder path was provided; if not, set a default
-    if nargin < 4  % If fewer than 4 arguments are provided
+    if nargin < 3  % If fewer than 3 arguments are provided
         outputFolderPath = fullfile(pwd, 'UpdatedChannelsAndData');  % Default to a folder in the current directory
     end
 
@@ -13,15 +13,13 @@ function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFold
     data_copy = data; % Make a copy of data to modify
 
     % Step 2: Define channels to remove and remove them from the first 60 channels
-   %From CH_7 notes: M1 and M2 are bad channels, FT8 and TP7 are noise
- channelsToRemove = {'M1', 'M2', 'FT8', 'FT7','PO5','PO6'};
+    channelsToRemove = {'M1', 'M2', 'FT8', 'FT7', 'PO5', 'po5', 'PO6', 'po6'};
     logicalIndicesToRemove = ismember(HDR_updated.label(1:60), channelsToRemove);
     removedChannels = HDR_updated.label(logicalIndicesToRemove);
     HDR_updated.label_finalized = HDR_updated.label(~logicalIndicesToRemove);
 
     % Remove data rows corresponding to removed channels
     data_copy(logicalIndicesToRemove, :) = []; % Remove data rows
-
 
     % Step 3: Adjust data rows to match HDR_updated.label_finalized
     data_finalized = zeros(length(HDR_updated.label_finalized), size(data_copy, 2));
@@ -38,12 +36,12 @@ function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFold
     fprintf('Size of HDR.label after channel removal: %d\n', length(HDR_updated.label_finalized));
     fprintf('Size of data after channel removal: %d x %d\n', size(data_finalized, 1), size(data_finalized, 2));
 
-    % Step 5: Save to the output folder
+    % Step 4: Save to the output folder
     if ~exist(outputFolderPath, 'dir')
         mkdir(outputFolderPath); % Create the folder if it doesn't exist
     end
     save(fullfile(outputFolderPath, 'HDR_updated.mat'), 'HDR_updated', '-v7.3');
-save(fullfile(outputFolderPath, 'data_finalized.mat'), 'data_finalized', '-v7.3');
+    save(fullfile(outputFolderPath, 'data_finalized.mat'), 'data_finalized', '-v7.3');
 
     % Display messages or perform additional actions if necessary
 end

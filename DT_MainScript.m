@@ -12,7 +12,7 @@ load('Archive_1_CN7.mat')
 
 % Call the processHDRandData function for simultaneous channel removal and data
 % adjustment - new HDR
-[HDR_updated, data_finalized] = processHDRandData(HDR, data);
+[HDR_updated, data_finalized] = processHDRandData(HDR, data); 
 
 %% STEP3: Laplacian Calculation on Data
 
@@ -20,6 +20,7 @@ load('Archive_1_CN7.mat')
 data_laplac = laplacian_reference(data_finalized, HDR_updated.label_finalized, Ch_labels);
 
 % 'data_laplac' now contains the Laplacian-referenced data
+
 %% STEP4: Plot first channel before & after laplacian_reference.m function
 
 %Can likely remove after E.S. approves
@@ -42,10 +43,10 @@ newFs = originalFs/4;  % Downsampling to 256 Hz %Ask Emily about this
 % 'dsdata_laplac' now contains the downsampled Laplacian-transformed EEG data
 % 'dst' contains the corresponding downsampled time axis
 
-%% Run spectrograms for every electrode and save the figures 
+%% STEP 6: Run spectrograms for every electrode and save the figures 
 
 % Add Chronux to MATLAB's path
-addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT/ThirdPartyPackages/chronux_2_12/chronux_2_12/spectral_analysis/continuous/')
+addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT_April/ThirdPartyPackages/chronux_2_12/chronux_2_12/spectral_analysis/continuous/')
 
 runSpectrograms(dsdata_laplac, newFs, HDR_updated);
 %fix downsampling code, rerun spectrograms, session spectrograms, create a
