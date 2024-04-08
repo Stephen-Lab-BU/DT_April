@@ -47,7 +47,6 @@ newFs = originalFs/4;  % Downsampling to 256 Hz %Ask Emily about this
 % Add Chronux to MATLAB's path
 addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT/ThirdPartyPackages/chronux_2_12/chronux_2_12/spectral_analysis/continuous/')
 
-%%
 runSpectrograms(dsdata_laplac, newFs, HDR_updated);
 %fix downsampling code, rerun spectrograms, session spectrograms, create a
 %new spectrogram that is only 2 mins, read multitaper paper, 
