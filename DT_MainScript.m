@@ -17,9 +17,11 @@ load('Archive_1_CN7.mat')
 %% STEP3: Laplacian Calculation on Data
 
 % Now call laplacian_reference function with the processed data, finalized labels, and montage
-[data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated.label_finalized, Ch_labels);
+outputFolderPath_Laplacian = '/Users/daphne/Desktop/LaplacianData';
+[data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated.label_finalized, Ch_labels, outputFolderPath_Laplacian);
 
-% 'data_laplac' now contains the Laplacian-referenced data
+% 'data_laplac' now contains the Laplacian-referenced data + data is in new
+% folder
 
 %% STEP4: Plot first channel before & after laplacian_reference.m function
 
@@ -33,15 +35,16 @@ plotLaplacianTransformedSignal(data_finalized, data_laplac);
 % Assume HDR.frequency contains the original sampling frequencies in a 1x104 array
 originalFs = HDR.frequency(1);  % Using the first value, ensure this is consistent for your data
 
-% Define your target sampling frequency
-newFs = originalFs/4;  % Downsampling to 256 Hz %Ask Emily about this 
+% Define target sampling frequency
+newFs = originalFs/4;  % Downsampling to 256 Hz %Ask E.S. about this - use '/' or actual value '256'?
 
 % Call the function to downsample and plot before and after downsampling on
 % first electrode
-[dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data_laplac, originalFs, newFs, HDR_updated);
-
+outputFolderPath_Laplacian = '/Users/daphne/Desktop/DownsampledLaplacianData';
+[dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data_laplac, originalFs, newFs, HDR_updated, outputFolderPath_Laplacian);
 % 'dsdata_laplac' now contains the downsampled Laplacian-transformed EEG data
 % 'dst' contains the corresponding downsampled time axis
+% Downsampled laplacian referenced data is also saved in a separate folder
 
 %% STEP 6: Run spectrograms for every electrode and save the figures 
 
