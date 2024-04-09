@@ -17,7 +17,7 @@ load('Archive_1_CN7.mat')
 %% STEP3: Laplacian Calculation on Data
 
 % Now call laplacian_reference function with the processed data, finalized labels, and montage
-[data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated.label_finalized, Ch_labels);
+data_laplac = laplacian_reference(data_finalized, HDR_updated.label_finalized, Ch_labels);
 
 % 'data_laplac' now contains the Laplacian-referenced data
 
@@ -45,11 +45,9 @@ newFs = originalFs/4;  % Downsampling to 256 Hz %Ask Emily about this
 
 %% STEP 6: Run spectrograms for every electrode and save the figures 
 
-addpath(genpath('//Users/daphne/Desktop/StephenLab     Rotation/chronux_2_12'));
-
-addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT_April/Functions')
-
-[numFiguresSet1, numFiguresSet2] = runSpectrograms(dsdata_laplac, newFs, HDR_updated, validChannels);
-
+% Add Chronux to MATLAB's path
+addpath('//Users/daphne/Desktop/StephenLab     Rotation/chronux_2_12/spectral_analysis/continuous')
+%%
+runSpectrograms(dsdata_laplac, newFs, HDR_updated, Ch_labels);
 %fix downsampling code, rerun spectrograms, session spectrograms, create a
 %new spectrogram that is only 2 mins, read multitaper paper, 

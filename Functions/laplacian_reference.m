@@ -1,7 +1,10 @@
-function data_laplac = laplacian_reference(data_finalized, hdr_label_finalized, ch_labels)
+function [data_laplac, validChannels] = laplacian_reference(data_finalized, hdr_label_finalized, ch_labels)
     % Ensure the number of data_finalized rows matches the number of hdr_label_finalized
     assert(size(data_finalized, 1) == length(hdr_label_finalized), 'Mismatch between data rows and channel labels.');
     
+    % Initialize an array to keep track of valid channels
+    validChannels = true(1, length(hdr_label_finalized));  % Assume all channels are valid initially
+
     % Initialize the output matrix
     nChannels = length(hdr_label_finalized);
     nTimepoints = size(data_finalized, 2);
@@ -13,7 +16,9 @@ function data_laplac = laplacian_reference(data_finalized, hdr_label_finalized, 
         
         % Verify the current channel is defined in the montage
         if ~isKey(ch_labels, channel)
-            error('Channel %s not found in montage. Calculation cannot proceed.', channel);
+            warning('Channel %s not found in montage. Skipping this channel.', channel);
+            validChannels(i) = false;  % Mark this channel as invalid
+            continue;  % Skip this channel
         end
         
         % Retrieve neighbors for the current channel from the montage
@@ -25,6 +30,7 @@ function data_laplac = laplacian_reference(data_finalized, hdr_label_finalized, 
         % Ensure there are enough neighbors for meaningful Laplacian calculation
         if length(neighbor_inds) < 3  % Example threshold, adjust as needed
             warning('Not enough neighbors for channel %s. Laplacian calculation may be inaccurate.', channel);
+            validChannels(i) = false;  % Mark this channel as having insufficient neighbors
             continue;  % Optionally skip this channel or handle differently
         end
         
@@ -32,6 +38,6 @@ function data_laplac = laplacian_reference(data_finalized, hdr_label_finalized, 
         data_laplac(i, :) = data_finalized(i, :) - mean(data_finalized(neighbor_inds, :), 1);
     end
 
-    % Return Laplacian-referenced data
+    % Return Laplacian-referenced data along with the valid channels array
     return;
 end

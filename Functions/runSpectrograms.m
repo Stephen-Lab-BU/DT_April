@@ -1,4 +1,8 @@
-function runSpectrograms(dsdata_laplac, newFs, HDR_updated)
+function [numFiguresSet1, numFiguresSet2] = runSpectrograms(dsdata_laplac, newFs, HDR_updated, validChannels)
+    % Initialize counters for the number of figures saved in each set
+    numFiguresSet1 = 0;
+    numFiguresSet2 = 0;
+
     % Validate inputs
     if ~isnumeric(dsdata_laplac) || isempty(dsdata_laplac)
         error('Input data must be a non-empty numeric matrix.');
@@ -7,12 +11,12 @@ function runSpectrograms(dsdata_laplac, newFs, HDR_updated)
     if ~isnumeric(newFs) || ~isscalar(newFs) || newFs <= 0
         error('Sampling frequency (newFs) must be a positive scalar.');
     end
-
+    
     % Define parameters for multitaper spectrogram
     params.Fs = newFs;             % Sampling frequency
     params.tapers = [10 8];        % Time-bandwidth product and the number of tapers [TW K]
     movingwin = [10 5];            % Window length is 10s and step size is 5s for overlap
-
+    
     % Create directories for saving the figures
     folderSet1 = 'MATLABSpectrograms_Set1';  % Folder for all session spectrograms
     folderSet2 = 'MATLABSpectrograms_Set2';  % Folder for 33-35 mins focused spectrograms
@@ -35,31 +39,36 @@ function runSpectrograms(dsdata_laplac, newFs, HDR_updated)
         error('Focused spectrogram window exceeds data length.');
     end
 
-   % Loop through each electrode
-    for i = 1:size(dsdata_laplac, 1)
-        % Use HDR_updated.label_finalized for labeling
-        electrodeLabel = HDR_updated.label_finalized{i};
+     % Loop through each channel in HDR_updated.label_finalized
+    for i = 1:length(HDR_updated.label_finalized)
+        if ~validChannels(i)
+            continue;  % Skip channels marked as invalid
+        end
+
+        channelLabel = HDR_updated.label_finalized{i};
 
         % Run full session spectrogram
         params.fpass = [0, params.Fs/2];  % Full frequency range for full session spectrogram
         [S_full, t_full, f_full] = mtspecgramc(dsdata_laplac(i,:), movingwin, params);
-        figure;
+        fig = figure('visible','off');  % Create an invisible figure
         imagesc(t_full, f_full, 10*log10(S_full)');
         axis xy; colorbar;
-        title(['Electrode ' electrodeLabel ' Full Session Spectrogram']);
-        saveas(gcf, fullfile(folderSet1, ['Electrode_' electrodeLabel '_FullSessionSpectrogram.png']));
+        title(['Electrode ' channelLabel ' Full Session Spectrogram']);
+        saveas(fig, fullfile(folderSet1, ['Electrode_' channelLabel '_FullSessionSpectrogram.png']));
+        numFiguresSet1 = numFiguresSet1 + 1;  % Increment counter for Set1
 
         % Run focused spectrogram
         params.fpass = [0, 45];  % Frequency range of interest for focused spectrogram
-        % Assuming startTimeIdx and endTimeIdx are calculated elsewhere in your function
         dataSegment = dsdata_laplac(i, startTimeIdx:endTimeIdx);
-        [S_focus, t_focus, f_focus] = mtspecgramc(dataSegment, movingwin, params);
-        figure;
-        imagesc(t_focus + startTimeSec, f_focus, 10*log10(S_focus)');  % Offset time axis by startTimeSec
+        fig = figure('visible','off');  % Create another invisible figure for the focused spectrogram
+        imagesc(t_focus + startTimeSec, f_focus, 10*log10(S_focus)');
         axis xy; colorbar;
-        title(['Electrode ' electrodeLabel ' Focused Spectrogram (33-35 mins, 0-45 Hz)']);
-        saveas(gcf, fullfile(folderSet2, ['Electrode_' electrodeLabel '_FocusedSpectrogram.png']));
+        title(['Electrode ' channelLabel ' Focused Spectrogram (33-35 mins, 0-45 Hz)']);
+        saveas(fig, fullfile(folderSet2, ['Electrode_' channelLabel '_FocusedSpectrogram.png']));
+        numFiguresSet2 = numFiguresSet2 + 1;  % Increment counter for Set2
     end
+
+    % Display the number of figures saved in each folder
+    disp(['Number of figures saved in Set 1: ', num2str(numFiguresSet1)]);
+    disp(['Number of figures saved in Set 2: ', num2str(numFiguresSet2)]);
 end
-
-
