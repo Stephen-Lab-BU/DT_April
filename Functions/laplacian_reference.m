@@ -1,4 +1,17 @@
 function [data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated_label_finalized, ch_labels, outputFolderPath)
+
+    %FUNCTION DESCRIPTION: This function conducts laplacian calculations on
+    %our updated HDR.labels & data, this conducts a check for if and when a
+    %channel/electrode has an insufficient amount of channel neighbors and
+    %will proceed to output an error warning with the specific channels
+    %with insufficient channel neighbors. Might consider adjusting
+    %threshold but for now it is less than 3 (< 3). This function will also
+    %plot the first electrode pre and post-laplacian reference and will
+    %also plot the channels with insufficient neighbors. All of this will
+    %be saved onto the main 'Data' folder within sub-folder
+    %'AllLaplacianReferencedData'. data_laplac = is laplacian referenced
+    %data. 
+
     % Ensure the number of data_finalized rows matches the number of HDR_updated_label_finalized
     assert(size(data_finalized, 1) == length(HDR_updated_label_finalized), 'Mismatch between data rows and HDR_updated.label_finalized.');
     

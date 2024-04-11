@@ -1,7 +1,8 @@
 function [MainChannels, Ch_labels] = defineKayserMontage()
-%Description of Fn = Defines electrodes and electrode neighbors from the
+%FUNCTION DESCRIPTION: Defines electrodes and electrode neighbors from the
 %Kayser paper as our montage reference.
 %Paper:https://www.sciencedirect.com/science/article/pii/S0167876015001609
+
 % Define all 66 electrodes
     MainChannels = {'Fpz', 'AFz', 'Fz', 'FCz', 'Cz', 'CPz', 'Pz', 'POz', 'Oz', 'Iz', 'Fp1', 'AF3', 'F1', 'FC1', 'CP1', 'P1', 'F3', 'FC3', 'C3', 'CP3', 'P3', 'PO3', 'O1', 'AF7', 'F7', 'FT7', 'T7', 'TP9', 'P9', 'F5', 'FC5', 'C5', 'CP5', 'P5', 'PO7', 'TP7', 'P7', 'Fp2', 'AF4', 'F4', 'FC4', 'C4', 'CP4', 'P4', 'PO4', 'O2', 'F2', 'FC2', 'C2', 'CP2', 'P2', 'AF8', 'F6', 'FC6', 'C6', 'CP6', 'P6', 'PO8', 'F8', 'T8', 'TP8','P10', 'FT8','C1','P8','TP10'};
     % Initialize a containers.Map object to store electrode neighbors

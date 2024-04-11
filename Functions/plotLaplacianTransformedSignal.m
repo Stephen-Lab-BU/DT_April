@@ -1,5 +1,6 @@
 function plotLaplacianTransformedSignal(dataFinalized, dataLaplac)
-    % This function plots the first electrode/channel from dataFinalized and dataLaplac.
+    % This function plots the first electrode/channel from dataFinalized
+    % and dataLaplac. May not need this later on 
     
     % Validate input dimensions
     assert(size(dataFinalized, 1) >= 1, 'The finalized data should have at least one channel.');

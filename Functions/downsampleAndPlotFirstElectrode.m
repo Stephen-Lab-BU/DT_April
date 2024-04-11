@@ -1,4 +1,5 @@
 function [dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data, originalFs, newFs, HDR_updated, outputFolderPath)
+    
     % FUNCTION DESCRIPTION: Downsamples the already modified, laplacian-referenced EEG data 
     % to a new sampling frequency (newFs) of  256 Hz and plots the
     % original and downsampled signals for the first electrode in
