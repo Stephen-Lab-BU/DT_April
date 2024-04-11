@@ -1,6 +1,16 @@
 function [dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data, originalFs, newFs, HDR_updated, outputFolderPath)
-    % Downsamples the given EEG data to a new sampling frequency (newFs) and plots the
-    % original and downsampled signals for the first electrode in HDR_updated.label_finalized.
+    % FUNCTION DESCRIPTION: Downsamples the already modified, laplacian-referenced EEG data 
+    % to a new sampling frequency (newFs) of  256 Hz and plots the
+    % original and downsampled signals for the first electrode in
+    % HDR_updated.label_finalized. Plots figure demonstrating data from 
+    % the first electrode before and after downsampling. Saves this data in main 'Data Folder' in
+    % sub-folder called 'DownsampledLaplacianReferencedData'.
+
+    % Define the path for the 'DownsampledLaplacianReferencedData' sub-folder within 'Data'
+    downsampledDataPath = fullfile(outputFolderPath, 'DownsampledLaplacianReferencedData');
+    if ~exist(downsampledDataPath, 'dir')
+        mkdir(downsampledDataPath);  % Create the sub-folder if it doesn't exist
+    end
 
     % Calculate the downsampling factor
     dsfactor = originalFs / newFs;
@@ -17,7 +27,7 @@ function [dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data, originalFs
     firstElectrodeIndex = find(strcmp(HDR_updated.label_finalized, HDR_updated.label_finalized{1}));
 
     % Plotting the first electrode before and after downsampling
-    figure;
+    fig = figure;
     subplot(2, 1, 1);  
     plot(t, data(firstElectrodeIndex, :), 'b'); 
     title(['Original Signal for Electrode ' HDR_updated.label_finalized{1}]);
@@ -30,12 +40,11 @@ function [dsdata_laplac, dst] = downsampleAndPlotFirstElectrode(data, originalFs
     xlabel('Time (s)');
     ylabel('Amplitude');
 
-% Save the downsampled data and time axis
-    if ~exist(outputFolderPath, 'dir')
-        mkdir(outputFolderPath);  % Create the folder if it doesn't exist
-    end
+    % Save the plot in the 'DownsampledLaplacianReferencedData' sub-folder
+    saveas(fig, fullfile(downsampledDataPath, ['DownsampledSignal_Electrode_' HDR_updated.label_finalized{1} '.png']));
+    close(fig);
 
-    save(fullfile(outputFolderPath, 'dsdata.mat'), 'dsdata_laplac');
-    save(fullfile(outputFolderPath, 'dst.mat'), 'dst');
+    % Save the downsampled data and time axis in the sub-folder
+    save(fullfile(downsampledDataPath, 'dsdata_laplac.mat'), 'dsdata_laplac', '-v7.3');
+    save(fullfile(downsampledDataPath, 'dst.mat'), 'dst', '-v7.3');
 end
-

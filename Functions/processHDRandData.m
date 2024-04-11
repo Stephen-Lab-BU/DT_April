@@ -1,7 +1,24 @@
 function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFolderPath)
+
+% FUNCTION DESCRIPTION: This function will remove channels and only take
+% the first 64 channels from the HDR.labels since the rest is negligible.
+% It also aligns the data with the indices of the updated HDR.labels and
+% saves the data into a subfolder called 'UpdatedHDRandData' in main 'Data'
+% folder. It also presents the size of the HDR.label and data before and
+% after channel removal in the command window as a double-check that the
+% function is working in the manner in which we would expect it to. 
+
     % Check if the output folder path was provided; if not, set a default
     if nargin < 3  % If fewer than 3 arguments are provided
-        outputFolderPath = fullfile(pwd, 'UpdatedChannelsAndData');  % Default to a folder in the current directory
+        outputFolderPath = fullfile(pwd, 'Data');  % Default to the 'Data' folder in the current directory
+    end
+
+    % Define the path for the 'UpdatedHDRandData' subfolder within the 'Data' folder
+    updatedDataPath = fullfile(outputFolderPath, 'UpdatedHDRandData');
+
+    % Create the 'UpdatedHDRandData' subfolder if it doesn't exist
+    if ~exist(updatedDataPath, 'dir')
+        mkdir(updatedDataPath);
     end
 
     % Print the original size of HDR.label and data
@@ -14,7 +31,7 @@ function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFold
 
     % Step 2: Define channels to remove and remove them from the first 60 channels
     channelsToRemove = {'M1', 'M2', 'FT8', 'FT7', 'PO5', 'po5', 'PO6', 'po6'};
-    logicalIndicesToRemove = ismember(HDR_updated.label(1:60), channelsToRemove);
+    logicalIndicesToRemove = ismember(HDR_updated.label(1:64), channelsToRemove);
     removedChannels = HDR_updated.label(logicalIndicesToRemove);
     HDR_updated.label_finalized = HDR_updated.label(~logicalIndicesToRemove);
 
@@ -36,12 +53,8 @@ function [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFold
     fprintf('Size of HDR.label after channel removal: %d\n', length(HDR_updated.label_finalized));
     fprintf('Size of data after channel removal: %d x %d\n', size(data_finalized, 1), size(data_finalized, 2));
 
-    % Step 4: Save to the output folder
-    if ~exist(outputFolderPath, 'dir')
-        mkdir(outputFolderPath); % Create the folder if it doesn't exist
-    end
-    save(fullfile(outputFolderPath, 'HDR_updated.mat'), 'HDR_updated', '-v7.3');
-    save(fullfile(outputFolderPath, 'data_finalized.mat'), 'data_finalized', '-v7.3');
-
-    % Display messages or perform additional actions if necessary
+    % When saving, use the 'updatedDataPath' for the files
+    save(fullfile(updatedDataPath, 'HDR_updated.mat'), 'HDR_updated', '-v7.3');
+    save(fullfile(updatedDataPath, 'data_finalized.mat'), 'data_finalized', '-v7.3');
 end
+

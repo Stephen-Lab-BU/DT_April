@@ -12,10 +12,10 @@ addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT_April/Functions')
 load('Archive_1_CN7.mat')
 
 % Specify the output folder path where you want to save the processed HDR and data
-outputFolderPath= '/Users/daphne/Desktop/StephenLab     Rotation/Data'; % Replace this with your desired path or leave it out to use the default
+outputFolderPath_HDR = '/Users/daphne/Desktop/StephenLab     Rotation/Data'; % Replace this with your desired path or leave it out to use the default
 
 % Call the processHDRandData function
-[HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFolderPath);
+[HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFolderPath_HDR);
 %% STEP3: Laplacian Calculation on Data - 
 
 outputFolderPath = '/Users/daphne/Desktop/StephenLab     Rotation/Data';  % Path to the existing 'Data' folder
@@ -28,7 +28,7 @@ else
 end
 
 % Call the modified laplacian_reference function
-[data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated_label_finalized, Ch_labels, outputFolderPath);
+[data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_updated_label_finalized, Ch_labels, outputFolderPath_Laplacian);
 
 %% STEP4: Plot first channel before & after laplacian_reference.m function
 
@@ -58,7 +58,6 @@ outputFolderPath_Downsample= '/Users/daphne/Desktop/StephenLab     Rotation/Data
 
 %% STEP 6: Run spectrograms for every electrode and save the figures 
 
-outputFolderPath_Spectrograms = '/Users/daphne/Desktop/StephenLab     Rotation/Figures';
+outputFolderPath_Spectrograms('/Users/daphne/Desktop/StephenLab     Rotation/Figures')
 
-% Call the function with the defined path
-[numFiguresFullSession, numFiguresFocused] = runSpectrograms(dsdata_laplac, newFs, HDR_updated, validChannels, outputFolderPath_Spectrograms);
+[numFiguresSet1, numFiguresSet2] = runSpectrograms(dsdata_laplac, newFs, HDR_updated, validChannels,outputFolderPath);

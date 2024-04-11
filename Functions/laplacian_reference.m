@@ -3,46 +3,67 @@ function [data_laplac, validChannels] = laplacian_reference(data_finalized, HDR_
     assert(size(data_finalized, 1) == length(HDR_updated_label_finalized), 'Mismatch between data rows and HDR_updated.label_finalized.');
     
     % Initialize an array to keep track of valid channels
-    validChannels = true(1, length(HDR_updated_label_finalized));  % Assume all channels are valid initially
+    validChannels = true(1, length(HDR_updated_label_finalized));
 
     % Initialize the output matrix
     nChannels = length(HDR_updated_label_finalized);
     nTimepoints = size(data_finalized, 2);
     data_laplac = zeros(nChannels, nTimepoints);
-    
+
+    % Define the path for the 'AllLaplacianReferencedData' sub-folder within 'Data'
+    allLaplacianDataPath = fullfile(outputFolderPath, 'AllLaplacianReferencedData');
+    if ~exist(allLaplacianDataPath, 'dir')
+        mkdir(allLaplacianDataPath);
+    end
+
+    % Define the path for insufficient neighbor channel plots within 'AllLaplacianReferencedData'
+    insuffNeighborPlotsPath = fullfile(allLaplacianDataPath, 'InsufficientNeighborPlots');
+    if ~exist(insuffNeighborPlotsPath, 'dir')
+        mkdir(insuffNeighborPlotsPath);
+    end
+
     % Iterate over all channels in HDR_updated_label_finalized
     for i = 1:nChannels
-        channel = HDR_updated_label_finalized{i};  % Current channel label from finalized HDR labels
-        
+        channel = HDR_updated_label_finalized{i};
+
         % Verify the current channel is defined in the montage
         if ~isKey(ch_labels, channel)
             warning('Channel %s not found in montage. Skipping this channel.', channel);
-            validChannels(i) = false;  % Mark this channel as invalid
-            continue;  % Skip this channel
+            validChannels(i) = false;
+            continue;
         end
-        
+
         % Retrieve neighbors for the current channel from the montage
-        neighbors = ch_labels(channel);  % Neighbors as defined in montage
-        
+        neighbors = ch_labels(channel);
+
         % Find indices of neighbors in HDR_updated_label_finalized
         neighbor_inds = find(ismember(HDR_updated_label_finalized, neighbors));
-        
+
         % Ensure there are enough neighbors for meaningful Laplacian calculation
         if length(neighbor_inds) < 3
-            warning('Not enough neighbors for channel %s. Laplacian calculation may be inaccurate.', channel);
-            validChannels(i) = false;  % Mark this channel as having insufficient neighbors
-            continue;  % Optionally skip this channel or handle differently
+            warningMessage = sprintf('Not enough neighbors for channel %s. Laplacian calculation may be inaccurate.', channel);
+            warning(warningMessage);
+            validChannels(i) = false;
+
+            % Create a figure for the insufficient neighbors warning
+            fig = figure('visible', 'off');
+            plot(data_finalized(i, :));
+            title({['Channel ' channel ' - Insufficient Neighbors'], warningMessage});
+            xlabel('Time Points');
+            ylabel('Amplitude');
+
+            % Save the figure in 'InsufficientNeighborPlots' within 'AllLaplacianReferencedData'
+            saveas(fig, fullfile(insuffNeighborPlotsPath, ['Channel_' channel '_InsuffNeighbors.png']));
+            close(fig);
+
+            continue;
         end
-        
+
         % Calculate Laplacian: data for the channel minus mean of its neighbors
         data_laplac(i, :) = data_finalized(i, :) - mean(data_finalized(neighbor_inds, :), 1);
     end
 
-    % Save the Laplacian-referenced data and valid channels
-    if ~exist(outputFolderPath, 'dir')
-        mkdir(outputFolderPath);  % Create the folder if it doesn't exist
-    end
-
-    save(fullfile(outputFolderPath, 'data_laplac.mat'), 'data_laplac', '-v7.3');
-    save(fullfile(outputFolderPath, 'validChannels.mat'), 'validChannels', '-v7.3');
+    % Save the Laplacian-referenced data and valid channels into the 'AllLaplacianReferencedData' folder
+    save(fullfile(allLaplacianDataPath, 'data_laplac.mat'), 'data_laplac', '-v7.3');
+    save(fullfile(allLaplacianDataPath, 'validChannels.mat'), 'validChannels', '-v7.3');
 end
