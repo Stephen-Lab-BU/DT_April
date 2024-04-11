@@ -1,4 +1,4 @@
-%% STEP 1: Defining Electrodes 
+%% STEP 1: Defining Electrodes based on our Kayser Laplacian Montage
 
 addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT_April/Functions')
 %Call the defineKayesMontage for our Laplacian Montage
@@ -6,7 +6,7 @@ addpath('/Users/daphne/Desktop/StephenLab     Rotation/DT_April/Functions')
 % MainElectrode now contains the array of electrode names
 % Ch_labels now contains the map of electrode neighbors
 
-%% STEP 2 : 1) Load data 2) Simultaneously remove channels based on notes & align data 
+%% STEP 2 : 1) Load data & 2) Simultaneously remove channels based on notes & align data 
 
 % Load data 
 load('Archive_1_CN7.mat')
@@ -16,7 +16,7 @@ outputFolderPath= '/Users/daphne/Desktop/StephenLab     Rotation/Data'; % Replac
 
 % Call the processHDRandData function
 [HDR_updated, data_finalized] = processHDRandData(HDR, data, outputFolderPath);
-%% STEP3: Laplacian Calculation on Data - 
+%% STEP3: Laplacian Calculation on Data 
 
 outputFolderPath = '/Users/daphne/Desktop/StephenLab     Rotation/Data';  % Path to the existing 'Data' folder
 
@@ -38,6 +38,7 @@ end
 %Plotting channels with insufficient neighbors post-laplacian
 plotLaplacianTransformedSignal(data_finalized, data_laplac);
 %Notes about bad channels: Index for P7 = 17, Index for T7 = 20 , Index for T8 = 21 
+
 %% STEP 5: Downsample Laplacian-Transformed Data
 
 % Assume HDR.frequency contains the original sampling frequencies in a 1x104 array

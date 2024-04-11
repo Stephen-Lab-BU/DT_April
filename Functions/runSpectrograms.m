@@ -1,4 +1,17 @@
 function [numFiguresSet1, numFiguresSet2] = runSpectrograms(dsdata_laplac, newFs, HDR_updated, validChannels, outputFolderPath)
+   
+   %FUNCTION DESCRIPTION: Function takes the downsampled-laplacian-referenced data 
+   %and plots multi-taperspectrograms per electrode, two sets of multi-taper spetrograms are
+   %plotted: 1) full recordings & 2) 33-35 mins, 0-45 Hz - these will be
+   %automatically saved in the main 'Figures' folder within sub-folders
+   %'MultiTaperSpectrogramsFullsession' & 'MultiTaperSpectrogramsFocused'
+   %figures will contain name of each electrode plotted along with the kind
+   %of spectrogram they are, for this function we also remove channels with
+   %insufficient neighbors but might need to be modified depending on what
+   %E.S. says but in the command window it will also list the # of figures
+   %saved per kind of spectrogram and this should serve as a mental check
+   %for how many electrodes we should be plotting. 
+
     % Initialize counters for the number of figures saved in each set
     numFiguresSet1 = 0;
     numFiguresSet2 = 0;
